@@ -5,6 +5,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import logger
 import datetime
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
 from dataaccessframeworks.read_data import read_preprocess_data
 
 def main():
@@ -66,7 +68,7 @@ def check_and_use_gpus(memory_limit: int) -> None:
             logical_gpus = tf.config.list_logical_devices("GPU")
             print(len(gpus), "Physical GPUs, ", len(logical_gpus), "Logical GPU")
         except RuntimeError as error:
-            raise(error)
+            raise(f"RuntimeError:{error}")
 
 if __name__=="__main__":
     check_and_use_gpus(memory_limit=8192)
