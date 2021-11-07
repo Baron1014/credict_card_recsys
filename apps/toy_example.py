@@ -7,6 +7,8 @@ import logger
 import datetime
 from dataaccessframeworks.read_data import read_preprocess_data
 
+logger = logger.create_logger(
+        'toy_example', 'log/toy_example_log.log')
 start = datetime.datetime.now()
 
 # get training data
