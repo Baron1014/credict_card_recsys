@@ -42,9 +42,9 @@ def main():
     test_model_input = {name:test[name].values for name in feature_names}
 
 
-    model = DeepFM(linear_feature_columns,dnn_feature_columns,task='binary')
-    model.compile("adam", "binary_crossentropy",
-                  metrics=['binary_crossentropy'], )
+    model = DeepFM(linear_feature_columns,dnn_feature_columns,task='regression')
+    model.compile("adam", "mse",
+                  metrics=['mse'], )
 
     history = model.fit(train_model_input, train[target].values,
                         batch_size=256, epochs=10, verbose=2, validation_split=0.2, )
@@ -71,5 +71,5 @@ def check_and_use_gpus(memory_limit: int) -> None:
             raise(f"RuntimeError:{error}")
 
 if __name__=="__main__":
-    check_and_use_gpus(memory_limit=8192)
+    #check_and_use_gpus(memory_limit=8192)
     main()
