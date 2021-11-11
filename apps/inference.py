@@ -24,6 +24,15 @@ def get_inference_data(user, tags, id_to_num, user_attributes):
     inference_data = [[id_to_num[user],
                       tag,
                       user_attributes[user]["masts"],
+                      user_attributes[user]["txn_cnt"],
+                      user_attributes[user]["educd"],
+                      user_attributes[user]["trdtp"],
+                      user_attributes[user]["naty"],
+                      user_attributes[user]["poscd"],
+                      user_attributes[user]["cuorg"],
+                      user_attributes[user]["gender_code"],
+                      user_attributes[user]["age"],
+                      user_attributes[user]["primary_card"],
                       25]
                       for tag in tags]
 
