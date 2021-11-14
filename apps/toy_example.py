@@ -8,6 +8,7 @@ import datetime
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from dataaccessframeworks.read_data import read_preprocess_data
+from apps.inference import make_final
 
 def main():
     logger = logger.create_logger(
@@ -15,11 +16,11 @@ def main():
     start = datetime.datetime.now()
 
     # get training data
-    train = read_preprocess_data()
+    train, user_attributes = read_preprocess_data()
 
-    sparse_features = ["adj_id", "masts"]
-    dense_features = ["txn_cnt"]
-    target = ["shop_tag"]
+    sparse_features = ["adj_id", "shop_tag","masts"]
+    dense_features = ["dt"]
+    target = ["txn_amt_log"]
 
     # normalize dense features
     mms = MinMaxScaler(feature_range=(0,1))
@@ -51,6 +52,8 @@ def main():
 
     # predict
     pred_ans = model.predict(test_model_input, batch_size=256)
+    # make final output
+    make_final(model, train["shop_tags"].unique(),feature_names, columns=sparse_features+dense_features, user_attributes=user_attributes)
     logger.info(pred_ans)
     end = datetime.datetime.now()
     logger.info(f"Total cost: {end - start}")
