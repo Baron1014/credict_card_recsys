@@ -7,12 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 from models.deepfm import get_feature, run_model
 
 def main(save_path):
-    target = ["txn_cnt"]
-    user_attribute_col = ["masts", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card"] + target
+    user_attribute_col = ["masts", "txn_cnt", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card"]
     sparse_features = ["shop_tag"]+ user_attribute_col
     dense_features = ["dt"]
+    target = ["txn_cmt"]
     
-    df = read_raw(dense_features + ["chid", "shop_tag", "txn_amt", "naty", "cuorg"] + user_attribute_col)
+    df = read_raw(dense_features + ["chid", "shop_tag", "naty", "cuorg"] + user_attribute_col + target)
 
     # 取得使用者特徵屬性
     user_features = get_user_features(df, user_attribute_col)

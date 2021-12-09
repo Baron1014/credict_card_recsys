@@ -15,6 +15,4 @@ def transfer_type(df):
     df["age"] = df["age"].astype(int)
     df["gender_code"] = df["gender_code"].astype(int)
 
-    print(df.info())
-
     return df

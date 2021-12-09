@@ -48,7 +48,8 @@ def read_raw(read_col):
     
     # 將價格取log
     df["txn_amt"] = df["txn_amt"].apply(np.log)
-
+    print(df.info())
+    print(df.shape())
     return df
 
 
