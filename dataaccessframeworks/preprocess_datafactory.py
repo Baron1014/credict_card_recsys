@@ -1,3 +1,6 @@
+import pandas as pd
+from tqdm import tqdm
+
 def chunk_preprocess(df):
     # 將移失值排除
     df.dropna(inplace=True)

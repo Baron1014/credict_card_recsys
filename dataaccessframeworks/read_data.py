@@ -32,26 +32,40 @@ def read_preprocess_data():
 
     return train, user_attributes
 
-def read_raw():
+def read_raw(read_col):
     chunksize = 1000000
-    #chunks = pd.read_csv("../data/tbrain_cc_training_48tags_hash_final.csv", chunksize=chunksize, iterator=True)
+    chunks = pd.read_csv("../data/tbrain_cc_training_48tags_hash_final.csv", chunksize=chunksize, iterator=True)
 
-    #raw_data = list()
-    #for chunk in tqdm(chunks, desc="read raw data"):
-    #    raw_data.append(chunk[["dt", "chid", "shop_tag", "txn_cnt", "txn_amt", "masts", "educd", "trdtp", "naty", "poscd", "cuorg", "gender_code", "age", "primary_card"]])
+    raw_data = list()
+    for chunk in tqdm(chunks, desc="read raw data"):
+        chunk = chunk[read_col]
+        chunk= chunk_preprocess(chunk)
+        chunk = transfer_type(chunk)
+        raw_data.append(chunk)
+    
+    # 資料合併 
+    df = pd.concat(raw_data)
+    
+    # 將價格取log
+    df["txn_amt"] = df["txn_amt"].apply(np.log)
 
-    #df = pd.concat(raw_data)
-    #print(raw_data[0])
+    return df
 
-    #test
-    chunk = pd.read_csv("../data/tbrain_cc_training_48tags_hash_final.csv", nrows=chunksize)
-    chunk = chunk[["dt", "chid", "shop_tag", "txn_cnt", "txn_amt", "masts", "educd", "trdtp", "naty", "poscd", "cuorg", "gender_code", "age", "primary_card"]]
-    chunk= chunk_preprocess(chunk)
-    print(chunk)
-    print(chunk.info())
-    chunk = transfer_type(chunk)
 
-    return chunk
+def get_user_features(df, user_feature):
+    # 建立使用者屬性
+    final_df = pd.read_csv("../data/需預測的顧客名單及提交檔案範例.csv")
+    user_attributes = dict()
+    train_id = df["chid"].unique()
+    for i in tqdm(final_df["chid"].unique(), desc="get attributes"):
+        # 若是id有存在於訓練資料中，則取得對應數值，否則為0
+        if i in train_id:
+            filter_col = df[df["chid"]==i].iloc[0]
+            user_attributes[i] = {col: filter_col[col].astype("int") for col in user_feature}
+        else:
+            user_attributes[i] = {col: 0 for col in user_feature}
+
+    return user_attributes
 
 if __name__=="__main__":
     df = read_raw()

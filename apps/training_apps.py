@@ -2,10 +2,34 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from dataaccessframeworks.read_data import read_raw
+from dataaccessframeworks.read_data import read_raw, get_user_features
+from sklearn.preprocessing import LabelEncoder
+from models.deepfm import get_feature, run_model
 
-def main():
-    df = read_raw()
+def main(save_path):
+    target = ["txn_cnt"]
+    user_attribute_col = ["masts", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card"] + target
+    sparse_features = ["shop_tag"]+ user_attribute_col
+    dense_features = ["dt"]
+    
+    df = read_raw(dense_features + ["chid", "shop_tag", "txn_amt", "naty", "cuorg"] + user_attribute_col)
+
+    # 取得使用者特徵屬性
+    user_features = get_user_features(df, user_attribute_col)
+
+    # 將tag進行label
+    lbe = LabelEncoder()
+    df["shop_tag"] = df["shop_tag"].astype(str)
+    df["shop_tag"] = lbe.fit_transform(df["shop_tag"]) 
+
+    # generate faeture columns
+    df, feature_names, linear_feature_columns, dnn_feature_columns = get_feature(df, sparse_features, dense_features)
+
+    # training
+    model, history, ndcg = run_model(df, feature_names, linear_feature_columns, dnn_feature_columns, target, save_path, lbe)
+    print(history)
+
 
 if __name__== "__main__":
-    main()
+    save_path = "../model/DeepFM_3.h5"
+    main(save_path)
