@@ -37,19 +37,31 @@ def read_raw(read_col):
     chunks = pd.read_csv("../data/tbrain_cc_training_48tags_hash_final.csv", chunksize=chunksize, iterator=True)
 
     raw_data = list()
-    for chunk in tqdm(chunks, desc="read raw data"):
+    for i, chunk in enumerate(chunks):
+        print(f"read raw data:{i*chunksize}")
         chunk = chunk[read_col]
         chunk= chunk_preprocess(chunk)
-        chunk = transfer_type(chunk)
+        #chunk = transfer_type(chunk)
         raw_data.append(chunk)
     
     # 資料合併 
     df = pd.concat(raw_data)
     
+    # 資料型態轉換
+    df["shop_tag"] = df["shop_tag"].astype("category")
+    df["age"] = df["age"].astype(int)
+    df["naty"] = df["naty"].astype(int)
+    df["cuorg"] = df["cuorg"].astype(int)
+    df["masts"] = df["masts"].astype(int)
+    df["educd"] = df["educd"].astype(int)
+    df["trdtp"] = df["trdtp"].astype(int)
+    df["poscd"] = df["poscd"].astype(int)
+    df["gender_code"] = df["gender_code"].astype(int)
+
     # 將價格取log
     df["txn_amt"] = df["txn_amt"].apply(np.log)
     print(df.info())
-    print(df.shape())
+    print(df.shape)
     return df
 
 

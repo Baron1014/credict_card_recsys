@@ -3,3 +3,4 @@
 apps/__pycache__/
 dataaccessframeworks/__pycache__/
 venv/
+models/__pycache__/

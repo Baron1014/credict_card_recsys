@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from deepctr.models import DeepFM
 from deepctr.feature_column import SparseFeat, DenseFeat,get_feature_names
+from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
+
 from models.eval import ndcg
 
 
@@ -15,6 +17,7 @@ def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_colu
     test_model_input = {name:test[name].values for name in feature_names}
 
     model = DeepFM(linear_feature_columns,dnn_feature_columns,task='regression')
+    #model = multi_gpu_model(model, gpus=1)
     model.compile("adam", "mse",
                   metrics=['mse'])
     history = model.fit(train_model_input, train[target].values,
