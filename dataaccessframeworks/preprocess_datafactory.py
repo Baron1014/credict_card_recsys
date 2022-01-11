@@ -6,7 +6,8 @@ def chunk_preprocess(df):
     df.dropna(inplace=True)
 
     # 消費次數為負值不合理，因此進行排除
-    df = df[df["txn_cnt"]>0]
+    if "txn_cnt" in df.columns:
+        df = df[df["txn_cnt"]>0]
 
     return df
 
