@@ -11,6 +11,7 @@ def ndcg(df, feature_names, model, label_encoder, k=3):
         tmp = df[df["chid"]==user_id]
         tmp.sort_values(by=['txn_amt'], ascending=False, inplace=True)
         tmp.drop_duplicates(subset=['shop_tag'], inplace=True)
+        tmp = tmp[tmp["shop_tag"] != 0]
         
         # 進行預測
         tmp_input = {name:tmp[name].values for name in feature_names}

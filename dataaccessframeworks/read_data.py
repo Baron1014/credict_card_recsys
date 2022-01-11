@@ -48,20 +48,21 @@ def read_raw(read_col):
     df = pd.concat(raw_data)
     
     # 資料型態轉換
-    df["shop_tag"] = df["shop_tag"].astype("category")
-    df["age"] = df["age"].astype(int)
-    df["naty"] = df["naty"].astype(int)
-    df["cuorg"] = df["cuorg"].astype(int)
-    df["masts"] = df["masts"].astype(int)
-    df["educd"] = df["educd"].astype(int)
-    df["trdtp"] = df["trdtp"].astype(int)
-    df["poscd"] = df["poscd"].astype(int)
-    df["gender_code"] = df["gender_code"].astype(int)
-
+    if "shop_tag" in read_col:
+        df["shop_tag"] = df["shop_tag"].astype("category")
+    # 需轉換為in欄位
+    int_list = ["age", "naty", "cuorg", "masts", "educd",
+                "trdtp", "poscd", "gender_code"]
+    for col in int_list:
+        if col in read_col:
+            df[col] = df[col].astype(int)
     # 將價格取log
-    df["txn_amt"] = df["txn_amt"].apply(np.log)
+    if "txn_amt" in read_col:
+        df["txn_amt"] = df["txn_amt"].apply(np.log)
+
     print(df.info())
     print(df.shape)
+
     return df
 
 

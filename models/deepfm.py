@@ -8,7 +8,7 @@ from tensorflow.python.keras.utils.multi_gpu_utils import multi_gpu_model
 from models.eval import ndcg
 
 
-def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_columns, target, save_path, label_encoder):
+def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_columns, target, save_path, label_encoder, training=False):
     # traing data & testing data
     train, test = train_test_split(train_data, test_size=0.2, random_state=66)
     
@@ -17,20 +17,22 @@ def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_colu
     test_model_input = {name:test[name].values for name in feature_names}
 
     model = DeepFM(linear_feature_columns,dnn_feature_columns,task='regression')
-    #model = multi_gpu_model(model, gpus=1)
-    model.compile("adam", "mse",
-                  metrics=['mse'])
-    history = model.fit(train_model_input, train[target].values,
-                        batch_size=256, epochs=10, verbose=2, validation_split=0.2)
+    if training is True:
+        #model = multi_gpu_model(model, gpus=1)
+        model.compile("adam", "mse",
+                    metrics=['mse'])
+        history = model.fit(train_model_input, train[target].values.ravel(),
+                            batch_size=256, epochs=10, verbose=2, validation_split=0.2)
+        # save model 
+        model.save_weights(save_path)
+    else:
+        model.load_weights(save_path)
     
     # ndcg score
     scores = dict()
     scores["training_ndcg"] = ndcg(train, feature_names, model, label_encoder)
     scores["testing_ndcg"] = ndcg(test, feature_names, model, label_encoder)
     print(scores)
-    
-    # save model 
-    model.save_weights(save_path)
     
     return model, history, scores
 

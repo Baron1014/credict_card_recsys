@@ -11,13 +11,11 @@ from sklearn.preprocessing import LabelEncoder
 from models.deepfm import get_feature, run_model
 
 
-def main(save_path):
-    user_attribute_col = ["masts", "txn_cnt", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card"]
-    sparse_features = ["shop_tag"]+ user_attribute_col
+def main(save_path, user_attribute_col, sparse_features, training):
     dense_features = ["dt"]
     target = ["txn_amt"]
     
-    df = read_raw(dense_features + ["chid", "shop_tag", "naty", "cuorg"] + user_attribute_col + target)
+    df = read_raw(dense_features + ["chid", "shop_tag"] + user_attribute_col + target)
 
     # 取得使用者特徵屬性
     #user_features = get_user_features(df, user_attribute_col)
@@ -32,12 +30,33 @@ def main(save_path):
 
     # training
     print("start training model..")
-    model, history, ndcg = run_model(df, feature_names, linear_feature_columns, dnn_feature_columns, target, save_path, lbe)
+    model, history, ndcg = run_model(df, feature_names, linear_feature_columns, dnn_feature_columns, target, save_path, lbe, training=training)
     print(history)
+
+    return ndcg
 
 
 if __name__== "__main__":
     print(tf.config.list_physical_devices('GPU'))
     print(device_lib.list_local_devices())
-    save_path = "../model/DeepFM_3.h5"
-    main(save_path)
+    result = dict()
+    # 1. Toy Example
+    save_path = "models/model/DeepFM_0.h5"
+    user_attribute_col = ["masts"]
+    sparse_features = ["shop_tag"]+ user_attribute_col
+    score = main(save_path, user_attribute_col, sparse_features, training=True)
+    result["Example1"] = score
+    # 2. Customer Muti-Feature
+    save_path = "models/model/DeepFM_1.h5"
+    user_attribute_col = ["masts", "txn_cnt", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card", "naty", "cuorg"]
+    sparse_features = ["shop_tag"]+ user_attribute_col
+    score = main(save_path, user_attribute_col, sparse_features, training=True)
+    result["Example2"] = score
+    # 4. Remove naty and cuorg features
+    save_path = "models/model/DeepFM_3.h5"
+    user_attribute_col = ["masts", "txn_cnt", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card"]
+    sparse_features = ["shop_tag"]+ user_attribute_col
+    score = main(save_path, user_attribute_col, sparse_features, training=False)
+    result["Example3"] = score
+
+    print(result)
