@@ -9,8 +9,8 @@ def ndcg(df, feature_names, model, label_encoder, k=3):
     for user_id in tqdm(df["chid"].unique(), desc="ndcg score"):
         # 取得使用者數值
         tmp = df[df["chid"]==user_id]
-        tmp.sort_values(by=['txn_amt'], ascending=False, inplace=True)
-        tmp.drop_duplicates(subset=['shop_tag'], inplace=True)
+        tmp = tmp.sort_values(by=['txn_amt'], ascending=False)
+        tmp = tmp.drop_duplicates(subset=['shop_tag'])
         tmp = tmp[tmp["shop_tag"] != 0]
         
         # 進行預測
@@ -23,8 +23,8 @@ def ndcg(df, feature_names, model, label_encoder, k=3):
             continue
         tags_label = label_encoder.transform(true.tolist())
         sort_max = tags_label[np.argsort(pred_tmp, axis=0)[::-1]]
-        pre = label_encoder.inverse_transform(sort_max)
-        score = ndcg_score(np.array(true).reshape(1, -1), np.array(pre).reshape(1, -1), k=k)
+        pre = label_encoder.inverse_transform(sort_max.ravel())
+        score = ndcg_score(np.array(true, dtype=float).reshape(1, -1), np.array(pre, dtype=float).reshape(1, -1), k=k)
         
         #clear_output()
         total += score

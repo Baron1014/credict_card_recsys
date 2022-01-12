@@ -44,13 +44,13 @@ if __name__== "__main__":
     save_path = "models/model/DeepFM_0.h5"
     user_attribute_col = ["masts"]
     sparse_features = ["shop_tag"]+ user_attribute_col
-    score = main(save_path, user_attribute_col, sparse_features, training=True)
+    score = main(save_path, user_attribute_col, sparse_features, training=False)
     result["Example1"] = score
     # 2. Customer Muti-Feature
     save_path = "models/model/DeepFM_1.h5"
     user_attribute_col = ["masts", "txn_cnt", "educd", "trdtp", "poscd", "gender_code", "age", "primary_card", "naty", "cuorg"]
     sparse_features = ["shop_tag"]+ user_attribute_col
-    score = main(save_path, user_attribute_col, sparse_features, training=True)
+    score = main(save_path, user_attribute_col, sparse_features, training=False)
     result["Example2"] = score
     # 4. Remove naty and cuorg features
     save_path = "models/model/DeepFM_3.h5"
