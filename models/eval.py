@@ -15,7 +15,10 @@ def ndcg(df, feature_names, model, label_encoder, k=3):
         
         # 進行預測
         tmp_input = {name:tmp[name].values for name in feature_names}
-        pred_tmp = model.predict(tmp_input, batch_size=256)
+        if len(tmp_input["shop_tag"]) > 0:
+            pred_tmp = model.predict(tmp_input, batch_size=256)
+        else:
+            continue
         
         # 查找相對應tags
         true = tmp["shop_tag"].values.astype(str)
