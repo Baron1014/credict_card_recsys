@@ -30,8 +30,7 @@ def main(save_path, user_attribute_col, sparse_features, training):
 
     # training
     print("start training model..")
-    model, history, ndcg = run_model(df, feature_names, linear_feature_columns, dnn_feature_columns, target, save_path, lbe, training=training)
-    print(history)
+    model, ndcg = run_model(df, feature_names, linear_feature_columns, dnn_feature_columns, target, save_path, lbe, training=training)
 
     return ndcg
 

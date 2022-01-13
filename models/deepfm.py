@@ -21,7 +21,7 @@ def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_colu
         #model = multi_gpu_model(model, gpus=1)
         model.compile("adam", "mse",
                     metrics=['mse'])
-        history = model.fit(train_model_input, train[target].values.ravel(),
+        model.fit(train_model_input, train[target].values.ravel(),
                             batch_size=256, epochs=10, verbose=2, validation_split=0.2)
         # save model 
         model.save_weights(save_path)
@@ -34,7 +34,7 @@ def run_model(train_data, feature_names,linear_feature_columns, dnn_feature_colu
     scores["testing_ndcg"] = ndcg(test, feature_names, model, label_encoder)
     print(scores)
     
-    return model, history, scores
+    return model,  scores
 
 def get_feature(data, sparse_features, dense_features):
     #normalize dense
